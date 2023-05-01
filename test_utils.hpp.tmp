@@ -77,7 +77,7 @@
 #include <functional>
 #include <memory>
 #include <utility> // pair
-#include <stdexcept>
+#include <stdexcept> // runtime_error, logic_error...
 #include <exception>
 
 // Compatible C Library
