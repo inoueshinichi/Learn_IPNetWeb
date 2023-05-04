@@ -51,17 +51,23 @@ int main(int argc, char** argv)
         }
         std::printf("[Done] Step1. create socket\n");
 
-        if ((ret = setsockopt(passive_socket, IPPROTO_IPV6, IPV6_V6ONLY, (void*)&only_ipv6_flag, sizeof(only_ipv6_flag))) != 0)
+        if ((ret = setsockopt(passive_socket, 
+                              IPPROTO_IPV6, 
+                              IPV6_V6ONLY, 
+                              (void*)&only_ipv6_flag, 
+                              sizeof(only_ipv6_flag))) != 0)
         {
             std::printf("[Error] %s\n", strerror(errno));
             throw std::runtime_error("setsockopt IPV6_V6ONLY");
         }
 
         /* 2.接続受付用構造体の準備 */
+        std::memset(&client_info, 0, sizeof(client_info));
         client_info.sin6_family = AF_INET6;
         client_info.sin6_port = htons(port_of_self); // @warning 初期値はサーバーのポート番号. クライアントとの接続後(Accept後)は, クラアンとのポート番号が格納される.
         client_info.sin6_addr = in6addr_any; // in6addr_any "::" , in6addr_loopback "::1"
         socket_length = sizeof(client_info);
+        p_client = (struct sockaddr *)&client_info;
 
         /* 3.待受を行うIPアドレスとポート番号を指定 */
         if ((ret = bind(passive_socket, p_client, socket_length)) != 0)

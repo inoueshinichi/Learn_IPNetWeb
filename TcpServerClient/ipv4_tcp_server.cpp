@@ -52,6 +52,7 @@ int main(int argc, char** argv)
         std::printf("[Done] Step1. create socket\n");
 
         /* 2.接続受付用構造体の準備 */
+        std::memset(&client_info, 0, sizeof(client_info));
         client_info.sin_family = AF_INET;
         client_info.sin_port = htons(port_of_self); // @warning 初期値はサーバーのポート番号. クライアントとの接続後(Accept後)は, クライアントとのポート番号が格納される.
         client_info.sin_addr.s_addr = INADDR_ANY; // 全てのINetインターフェースで受け付ける

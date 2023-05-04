@@ -62,6 +62,7 @@ int main(int argc, char **argv)
         p_server = (struct sockaddr *)&server_info;
 
         /* 3.宛先(server)の確定 */
+        // server_info.sin6_addr = in6addr_loopback;
         char *server_name = "::1"; // loopback /* IPv6 */
         if (inet_pton(AF_INET6, server_name, &(server_info.sin6_addr)) == INADDR_NONE) /* IPv6 */
         {
