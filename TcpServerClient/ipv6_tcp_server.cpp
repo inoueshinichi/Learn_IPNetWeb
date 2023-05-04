@@ -1,5 +1,5 @@
 /**
- * @file simple_tcp_server.cpp
+ * @file ipv6_tcp_server.cpp
  * @author Shinichi Inoue (inoue.shinichi.1800@gmail.com)
  * @brief 
  * @version 0.1
@@ -27,13 +27,13 @@
 
 #define BUFSIZE 1500
 
-struct sockaddr client_info;// クライアント用ソケット情報
-struct sockaddr_in *p_client; // クライアント接続用インターフェース
-struct hostent *host;
+struct sockaddr_in6 client_info; // IPv6アドレス情報
+struct sockaddr *p_client; // インターフェース
 socklen_t socket_length;
-unsigned short port_of_self = 12345;
+unsigned short port_of_self = 54321;
 int listen_queue_size = 5;
 int ret;
+int only_ipv6_flag = 1;
 
 int passive_socket;   // Accept用ソケット
 int socket_to_client; // クライアントに接続するソケット
@@ -44,22 +44,27 @@ int main(int argc, char** argv)
     try
     {
         /* 1.ソケットの作成 */
-        if ((passive_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+        if ((passive_socket = socket(AF_INET6, SOCK_STREAM, 0)) < 0)
         {
             std::printf("[Error] %s\n", strerror(errno));
             throw std::runtime_error("socket");
         }
         std::printf("[Done] Step1. create socket\n");
 
+        if ((ret = setsockopt(passive_socket, IPPROTO_IPV6, IPV6_V6ONLY, (void*)&only_ipv6_flag, sizeof(only_ipv6_flag))) != 0)
+        {
+            std::printf("[Error] %s\n", strerror(errno));
+            throw std::runtime_error("setsockopt IPV6_V6ONLY");
+        }
+
         /* 2.接続受付用構造体の準備 */
+        client_info.sin6_family = AF_INET6;
+        client_info.sin6_port = htons(port_of_self); // @warning 初期値はサーバーのポート番号. クライアントとの接続後(Accept後)は, クラアンとのポート番号が格納される.
+        client_info.sin6_addr = in6addr_any; // in6addr_any "::" , in6addr_loopback "::1"
         socket_length = sizeof(client_info);
-        p_client = (struct sockaddr_in *)&client_info; // `sockeaddr`構造体を`sockaddr_in*`構造体ポインタを通して使用する.
-        p_client->sin_family = AF_INET;
-        p_client->sin_port = htons(port_of_self); // @warning 初期値はサーバーのポート番号. クライアントとの接続後(Accept後)は, クラアンとのポート番号が格納される.
-        p_client->sin_addr.s_addr = INADDR_ANY; // 全てのINetインターフェースで受け付ける
 
         /* 3.待受を行うIPアドレスとポート番号を指定 */
-        if ((ret = bind(passive_socket, (struct sockaddr *)p_client, socket_length)) != 0)
+        if ((ret = bind(passive_socket, p_client, socket_length)) != 0)
         {
             std::printf("[Error] %s\n", strerror(errno));
             throw std::runtime_error("bind");
@@ -71,7 +76,7 @@ int main(int argc, char** argv)
         {
             if (ret == EADDRINUSE)
             {
-                std::printf("Other socket listen this port. port of self is %s\n", port_of_self);
+                std::printf("Other socket listen this port. port of self is %u\n", port_of_self);
             }
 
             std::printf("[Error] %s\n", strerror(errno));
@@ -80,19 +85,19 @@ int main(int argc, char** argv)
         std::printf("[Done] Step3. listen socket and accepting client ...\n");
 
         /* 5.TCPクライアントからの接続要求を受ける */
-        if ((socket_to_client = accept(passive_socket, (struct sockaddr *)p_client, &socket_length)) == -1)
+        if ((socket_to_client = accept(passive_socket, p_client, &socket_length)) == -1)
         {
             std::printf("[Error] %s\n", strerror(errno));
             throw std::runtime_error("accept");
         }
         std::printf("[Done] Step4. accept client\n");
 
-        // 接続に成功したら, `passive_socket`でははく, `server_socket`を使用する.
+        // 接続に成功したら, `passive_socket`でははく, `server_to_socket`を使用する.
 
-        /* 6.クライアントのIPv4アドレスを文字列に変換 */
-        char client_address[INET_ADDRSTRLEN]; // ipv6はINET6_ADDRSTRLEN
-        inet_ntop(AF_INET, &(p_client->sin_addr), client_address, sizeof(client_address));
-        unsigned short port_of_client = ntohs(p_client->sin_port);
+        /* 6.クライアントのIPv6アドレスを文字列に変換 */
+        char client_address[INET6_ADDRSTRLEN];
+        inet_ntop(AF_INET6, &(client_info.sin6_addr), client_address, sizeof(client_address));
+        unsigned short port_of_client = ntohs(client_info.sin6_port);
         std::printf("connection from : client %s, port=%u\n", client_address, port_of_client);
 
         /* 7.クライアントからのメッセージを受信 */
@@ -102,7 +107,7 @@ int main(int argc, char** argv)
 
         /* 8.サーバーからクライアントへ送信 */
         std::memset(buf, 0, sizeof(buf));
-        std::snprintf(buf, sizeof(buf), "message from IPv4 server");
+        std::snprintf(buf, sizeof(buf), "message from IPv6 server");
         n = write(socket_to_client, buf, strnlen(buf, sizeof(buf)));
 
         /* 9.ソケットを閉じる */

@@ -1,5 +1,5 @@
 /**
- * @file simple_tcp_server.cpp
+ * @file ipv4_tcp_server.cpp
  * @author Shinichi Inoue (inoue.shinichi.1800@gmail.com)
  * @brief 
  * @version 0.1
@@ -27,9 +27,9 @@
 
 #define BUFSIZE 1500
 
-struct sockaddr client_info;// クライアント用ソケット情報
-struct sockaddr_in *p_client; // クライアント接続用インターフェース
-struct hostent *host;
+
+struct sockaddr_in client_info;  // IPv4アドレス情報
+struct sockaddr *p_client;       // インターフェース
 socklen_t socket_length;
 unsigned short port_of_self = 54321;
 int listen_queue_size = 5;
@@ -52,14 +52,14 @@ int main(int argc, char** argv)
         std::printf("[Done] Step1. create socket\n");
 
         /* 2.接続受付用構造体の準備 */
+        client_info.sin_family = AF_INET;
+        client_info.sin_port = htons(port_of_self); // @warning 初期値はサーバーのポート番号. クライアントとの接続後(Accept後)は, クライアントとのポート番号が格納される.
+        client_info.sin_addr.s_addr = INADDR_ANY; // 全てのINetインターフェースで受け付ける
         socket_length = sizeof(client_info);
-        p_client = (struct sockaddr_in *)&client_info; // `sockeaddr`構造体を`sockaddr_in*`構造体ポインタを通して使用する.
-        p_client->sin_family = AF_INET;
-        p_client->sin_port = htons(port_of_self); // @warning 初期値はサーバーのポート番号. クライアントとの接続後(Accept後)は, クラアンとのポート番号が格納される.
-        p_client->sin_addr.s_addr = INADDR_ANY; // 全てのINetインターフェースで受け付ける
+        p_client = (struct sockaddr *)&client_info;
 
         /* 3.待受を行うIPアドレスとポート番号を指定 */
-        if ((ret = bind(passive_socket, (struct sockaddr *)p_client, socket_length)) != 0)
+        if ((ret = bind(passive_socket, p_client, socket_length)) != 0)
         {
             std::printf("[Error] %s\n", strerror(errno));
             throw std::runtime_error("bind");
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
         {
             if (ret == EADDRINUSE)
             {
-                std::printf("Other socket listen this port. port of self is %s\n", port_of_self);
+                std::printf("Other socket listen this port. port of self is %u\n", port_of_self);
             }
 
             std::printf("[Error] %s\n", strerror(errno));
@@ -80,7 +80,7 @@ int main(int argc, char** argv)
         std::printf("[Done] Step3. listen socket and accepting client ...\n");
 
         /* 5.TCPクライアントからの接続要求を受ける */
-        if ((socket_to_client = accept(passive_socket, (struct sockaddr *)p_client, &socket_length)) == -1)
+        if ((socket_to_client = accept(passive_socket, p_client, &socket_length)) == -1)
         {
             std::printf("[Error] %s\n", strerror(errno));
             throw std::runtime_error("accept");
@@ -91,8 +91,8 @@ int main(int argc, char** argv)
 
         /* 6.クライアントのIPv4アドレスを文字列に変換 */
         char client_address[INET_ADDRSTRLEN]; // ipv6はINET6_ADDRSTRLEN
-        inet_ntop(AF_INET, &(p_client->sin_addr), client_address, sizeof(client_address));
-        unsigned short port_of_client = ntohs(p_client->sin_port);
+        inet_ntop(AF_INET, &(client_info.sin_addr), client_address, sizeof(client_address));
+        unsigned short port_of_client = ntohs(client_info.sin_port);
         std::printf("connection from : client %s, port=%u\n", client_address, port_of_client);
 
         /* 7.クライアントからのメッセージを受信 */

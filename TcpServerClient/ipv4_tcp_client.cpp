@@ -1,5 +1,5 @@
 /**
- * @file simple_tcp_client.cpp
+ * @file ipv4_tcp_client.cpp
  * @author Shinichi Inoue (inoue.shinichi.1800@gmail.com)
  * @brief
  * @version 0.1
@@ -27,9 +27,8 @@
 
 #define BUFSIZE 1500
 
-struct sockaddr server_info;  // ソケット情報
-struct sockaddr_in *p_server; // ネットワーク用インターフェース
-struct hostent *host;
+struct sockaddr_in server_info; // IPv4アドレス情報
+struct sockaddr *p_server; // インターフェース
 socklen_t socket_length;
 unsigned short port_of_server = 54321;
 
@@ -49,23 +48,27 @@ int main(int argc, char **argv)
         std::printf("[Done] Step1. create socket\n");
 
         /* 2.接続先指定用構造体の準備 */
-        p_server = (struct sockaddr_in *)&server_info; // `sockeaddr`構造体を`sockaddr_in*`構造体ポインタを通して使用する.
-        p_server->sin_family = AF_INET;
-        p_server->sin_port = htons(port_of_server);
+        server_info.sin_family = AF_INET;
+        server_info.sin_port = htons(port_of_server);
+        socket_length = sizeof(server_info);
+        p_server = (struct sockaddr *)&server_info;
 
         /* 3.宛先(server)の確定 */
         char *server_name = "127.0.0.1";
-        if ((p_server->sin_addr.s_addr = inet_addr(server_name)) == INADDR_NONE)
+        if (inet_pton(AF_INET, server_name, &(server_info.sin_addr)) == INADDR_NONE)
         {
             // IPアドレスではない
-            host = gethostbyname(server_name);
-            if (host == NULL)
-            {
-                std::printf("No IP Address : %s\n", server_name);
-                throw std::runtime_error("address");
-            }
-            p_server->sin_family = host->h_addrtype;
-            std::memcpy(&(p_server->sin_addr), host->h_addr, host->h_length);
+            // host = gethostbyname(server_name);
+            // if (host == NULL)
+            // {
+            //     std::printf("No IP Address : %s\n", server_name);
+            //     throw std::runtime_error("address");
+            // }
+            // p_server->sin_family = host->h_addrtype;
+            // std::memcpy(&(p_server->sin_addr), host->h_addr, host->h_length);
+
+            std::printf("[Error] %s\n", strerror(errno));
+            throw std::runtime_error("IP Address");
         }
         std::printf("[Done] Step2. configure destination (server): `%s`; port=%u\n", server_name, port_of_server);
 
