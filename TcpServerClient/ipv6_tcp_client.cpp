@@ -38,7 +38,7 @@
 struct sockaddr_in6 server_info; // IPv6アドレス情報
 struct sockaddr *p_server; // インターフェース
 socklen_t socket_length;
-unsigned short port_of_server = 23456;
+unsigned short port_of_server = 54321;
 
 int socket_to_server; // サーバに接続するソケット
 char buf[BUFSIZE];
