@@ -241,7 +241,7 @@ int main(int argc, char **argv)
                 if (timeout_count < 20)
                 {
                     std::printf("*");
-                    std::fflush(stdout);
+                    std::fflush(stdout); // https://daeudaeu.com/fflush/#fflush-3
                     timeout_count++;
                 }
                 else

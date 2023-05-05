@@ -13,9 +13,9 @@
 // tcp
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h> // socket_in
-#include <arpa/inet.h>  // inet_pton
-#include <netdb.h>      // gethostbyname
+#include <netinet/in.h> 
+#include <arpa/inet.h>  // inet_pton, inet_ntop
+#include <netdb.h>
 
 #if defined(__linux__)
 
