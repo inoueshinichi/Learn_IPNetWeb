@@ -308,8 +308,7 @@ char service_name[NI_MAXSERV];
 + 読み書き処理
 + クローズ
 
-### 推奨API
-+ 非プロトコル依存
+### 推奨API (非アドレスファミリ依存)
 | 名前 | 機能 |
 | :-- | :-- |
 | struct sockaddr_storage | 汎用バイナリアドレス用ソケット構造体 |
