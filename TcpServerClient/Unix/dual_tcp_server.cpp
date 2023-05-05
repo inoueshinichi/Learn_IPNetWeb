@@ -229,6 +229,7 @@ int main(int argc, char **argv)
         }
 
         // acceptできるソケットを巡回する
+        int timeout_count = 0;
         while (true)
         {
             // タイムアウトまでBlocking 1000[ms]
@@ -237,6 +238,18 @@ int main(int argc, char **argv)
             if (nready == 0)
             {
                 // タイムアウト
+                if (timeout_count < 20)
+                {
+                    std::printf("*");
+                    std::fflush(stdout);
+                    timeout_count++;
+                }
+                else
+                {
+                    std::printf("\n");
+                    timeout_count = 0;
+                }
+                
                 continue;
             }
 
