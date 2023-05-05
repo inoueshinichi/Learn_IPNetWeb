@@ -325,6 +325,7 @@ char service_name[NI_MAXSERV];
 ### インターネット操作ルーチン
 + inet_aton, inet_addr, inet_network, inet_ntoa, inet_makeaddr, inet_lnaof, inet_netof.
 + https://linuxjm.osdn.jp/html/LDP_man-pages/man3/inet_addr.3.html 
+
 | 名前 | 機能 |
 | :-- | :-- |
 | in_addr_t inet_addr(const char *cp); |  |
@@ -340,6 +341,7 @@ char service_name[NI_MAXSERV];
 + h_errno, herror, hstrerror, 
 + gethostbyaddr_r, gethostbyname2, gethostbyname2_r, gethostbyname_r, gethostent_r  
 + https://linuxjm.osdn.jp/html/LDP_man-pages/man3/gethostbyname.3.html
+
 | 名前 | 機能 |
 | :-- | :-- |
 | struct hostent *gethostbyname(const char *name); | |
@@ -374,6 +376,7 @@ struct hostent {
 ### サービスのエントリーを取得する 
 + getservent, getservbyname, getservbyport, setservent, endservent
 + https://linuxjm.osdn.jp/html/LDP_man-pages/man3/getservent.3.html
+
 | 名前 | 機能 |
 | :-- | :-- |
 | struct servent *getservent(void); | |
