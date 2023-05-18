@@ -68,3 +68,4 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(Ping)
 add_subdirectory(TcpServerClient)
+add_subdirectory(UdpSenderReciever)

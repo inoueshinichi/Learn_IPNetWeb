@@ -15,7 +15,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h> // socket_in
 #include <arpa/inet.h>  // inet_pton
-#include <netdb.h>      // gethostbyname
+#include <netdb.h>
 
 #if defined(__linux__)
 
