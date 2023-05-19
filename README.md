@@ -27,9 +27,9 @@ How to use and understand Web IP Internet
 ### IPv4 NAT超え
 | 方式 | 正式名称 | タイプ | 内容 |
 | :-- | :-- | :-- | :-- |
-| EIM | Endpoint Independent Mapping (エンドポイント非依存マッピング) | タイプA | X1':x1' == X2':x2 |
-| ADM | Address Dependent Mapping (アドレス依存マッピング) | タイプB | x1' = x2', X1' != X2' |
-| APDM | Address and Port Dependent Mapping (アドレスとポート依存マッピング) | タイプC | X1':x1' != X2':x2 |
+| EIM | Endpoint Independent Mapping <br>(エンドポイント非依存マッピング) | タイプA | X1':x1' == X2':x2 |
+| ADM | Address Dependent Mapping <br>(アドレス依存マッピング) | タイプB | x1' = x2', X1' != X2' |
+| APDM | Address and Port Dependent Mapping <br>(アドレスとポート依存マッピング) | タイプC | X1':x1' != X2':x2 |
 
 ```
             ---------               ---------
