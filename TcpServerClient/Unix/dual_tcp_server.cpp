@@ -232,7 +232,7 @@ int main(int argc, char **argv)
         int timeout_count = 0;
         while (true)
         {
-            // タイムアウトまでBlocking 1000[ms]
+            // タイムアウトまでBlocking [ms]
             nready = poll(targets.data(), num_targets, 300); // 300[ms] 
 
             if (nready == 0)
