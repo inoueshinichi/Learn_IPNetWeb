@@ -66,7 +66,7 @@ endif()
 # include test_utils.hpp
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-add_subdirectory(Ping)
+add_subdirectory(SimplePing)
 add_subdirectory(TcpServerClient)
 add_subdirectory(UdpSenderReciever)
-add_subdirectory(CheckNatType)
+add_subdirectory(SimpleCheckNatType)
