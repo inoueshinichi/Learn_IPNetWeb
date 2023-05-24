@@ -100,7 +100,7 @@ int main(int argc, char** argv)
         std::memset(&self_addr_hists, 0, sizeof(self_addr_hists));
         self_addr_hists.ai_family = AF_INET; // IPv4のみ取得
         self_addr_hists.ai_socktype = SOCK_DGRAM;
-        if ((ret = getaddrinfo(/*multicast_addr_name_ipv4*/"239.192.100.100", NULL, &self_addr_hists, &addr_response)) != 0)
+        if ((ret = getaddrinfo(multicast_addr_name_ipv4/*"239.192.100.100"*/, NULL, &self_addr_hists, &addr_response)) != 0)
         {
             std::printf("[Error] %s\n", strerror(errno));
             std::printf("getaddrinfo : %s\n", gai_strerror(ret));
